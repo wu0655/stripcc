@@ -671,7 +671,8 @@ add_warning_cc_to_files(struct list_t *file_list, int fast_mode,
         cc_id[CC_NEST_MAX], cc_branch[CC_NEST_MAX], have_else[CC_NEST_MAX], 
         cur_nest, lineno, is_in_comment, invalid_file, warning_cc_id = 0;
     struct list_t *item;
-
+	int fileno = 0;
+	
     while (file_list != NULL) {
         /* initial setup */
         comment_begin = NULL;
@@ -703,7 +704,7 @@ add_warning_cc_to_files(struct list_t *file_list, int fast_mode,
         have_else[cur_nest] = 0;
         if (fprintf(tfp, "#if 1\n") < 0)
             ERRExit;
-        if (fprintf(tfp, "#warning %s_%d_%d_%s\n", MAGIC, cc_id[cur_nest],cc_branch[cur_nest],srcfile) < 0) 
+        if (fprintf(tfp, "#warning %s_%d_%d_%d_%s\n", MAGIC, fileno, cc_id[cur_nest],cc_branch[cur_nest],srcfile) < 0) 
         {
             ERRExit;
         }
@@ -908,7 +909,7 @@ add_warning_cc_to_files(struct list_t *file_list, int fast_mode,
                 //cc_id[cur_nest] = warning_cc_id++;
                 cc_branch[cur_nest] = 0;
                 have_else[cur_nest] = 0;
-                if (fprintf(tfp, "\n#warning %s_%d_%d\n", MAGIC, cc_id[cur_nest], 
+                if (fprintf(tfp, "\n#warning %s_%d_%d_%d\n", MAGIC,fileno, cc_id[cur_nest], 
                             cc_branch[cur_nest]) < 0) 
                 {
                     ERRExit;
@@ -916,7 +917,7 @@ add_warning_cc_to_files(struct list_t *file_list, int fast_mode,
             } else if (cc_type == ELIFCC) {
                 /* #elif */
                 cc_branch[cur_nest]++;
-                if (fprintf(tfp, "\n#warning %s_%d_%d\n", MAGIC, cc_id[cur_nest], 
+                if (fprintf(tfp, "\n#warning %s_%d_%d_%d\n", MAGIC, fileno, cc_id[cur_nest], 
                             cc_branch[cur_nest]) < 0) 
                 {
                     ERRExit;
@@ -925,7 +926,7 @@ add_warning_cc_to_files(struct list_t *file_list, int fast_mode,
                 /* #else */
                 cc_branch[cur_nest]++;
                 have_else[cur_nest] = 1;
-                if (fprintf(tfp, "\n#warning %s_%d_%d\n", MAGIC, cc_id[cur_nest], 
+                if (fprintf(tfp, "\n#warning %s_%d_%d_%d\n", MAGIC, fileno, cc_id[cur_nest], 
                             cc_branch[cur_nest]) < 0) 
                 {
                     ERRExit;
@@ -937,7 +938,7 @@ add_warning_cc_to_files(struct list_t *file_list, int fast_mode,
                     cc_branch[cur_nest]++;
                     if (fprintf(tfp, "\n#else\n") < 0)
                         ERRExit;
-                    if (fprintf(tfp, "\n#warning %s_%d_%d\n", MAGIC, cc_id[cur_nest], 
+                    if (fprintf(tfp, "\n#warning %s_%d_%d_%d\n", MAGIC, fileno, cc_id[cur_nest], 
                                 cc_branch[cur_nest]) < 0) 
                     {
                         ERRExit;
@@ -999,7 +1000,7 @@ invalid_file:
             have_else[cur_nest] = 0;
             if (fprintf(tfp, "#if 1\n") < 0)
                 ERRExit;
-            if (fprintf(tfp, "#warning %s_%d_%d\n", MAGIC, cc_id[cur_nest], 
+            if (fprintf(tfp, "#warning %s_%d_%d_%d\n", MAGIC, fileno, cc_id[cur_nest], 
                         cc_branch[cur_nest]) < 0) 
             {
                 ERRExit;
@@ -1021,6 +1022,7 @@ invalid_file:
 
         /* next */
         file_list = file_list->next;
+		fileno ++;
     }
 	
     return warning_cc_id;
@@ -2184,6 +2186,20 @@ main(int argc, char *argv[])
     printf("\033[32mo \033[0mAdding \"#warning\"...\n");
     ncc = add_warning_cc_to_files(file_list, fast_mode, &invalid_file_list, &main_list);
 
+{
+	FILE *fp_tmp = fopen("file_list.txt","w");
+    struct list_t *tmp;
+    tmp = file_list;
+
+    while (tmp != NULL) {
+        printf("%s\n", (char *)tmp->data);
+		fprintf(fp_tmp,"%s\n",tmp->data);
+        /* next */
+        tmp = tmp->next;
+    }
+
+	fclose(fp_tmp);
+}
 	printf("add warning finished. no more, just exit...\n");
 	return 0;
 #if 0
