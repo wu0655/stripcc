@@ -708,7 +708,11 @@ add_warning_cc_to_files(struct list_t *file_list, int fast_mode,
         {
             ERRExit;
         }
-
+#if 1
+	while(fgets(linebuf, sizeof(linebuf), sfp) != NULL){
+			fputs2(linebuf,tfp);
+		}
+#else
         /* parse the source file line by line */
         while (fgets(linebuf, sizeof(linebuf), sfp) != NULL) {
             logiline = NULL;
@@ -1006,7 +1010,7 @@ invalid_file:
                 ERRExit;
             }
         }
-
+#endif
         /* add a whole file CC(#endif) */
         /* the first '\n' is for source file which 
            dose not terminated by newline('\n') */
