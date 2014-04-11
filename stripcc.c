@@ -1012,7 +1012,7 @@ invalid_file:
         /* the first '\n' is for source file which 
            dose not terminated by newline('\n') */
 
-		if (fprintf(tfp, "#warning %s_%d_%d_%d_%s\n", MAGIC, fileno, cc_id[cur_nest],cc_branch[cur_nest],srcfile) < 0) 
+		if (fprintf(tfp, "\n#warning %s_%d_%d_%d_%s\n", MAGIC, fileno, cc_id[cur_nest],cc_branch[cur_nest],srcfile) < 0) 
 			  {
 				  ERRExit;
 			  }
