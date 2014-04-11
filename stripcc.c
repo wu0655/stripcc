@@ -704,10 +704,7 @@ add_warning_cc_to_files(struct list_t *file_list, int fast_mode,
         have_else[cur_nest] = 0;
         if (fprintf(tfp, "#if 1\n") < 0)
             ERRExit;
-        if (fprintf(tfp, "#warning %s_%d_%d_%d_%s\n", MAGIC, fileno, cc_id[cur_nest],cc_branch[cur_nest],srcfile) < 0) 
-        {
-            ERRExit;
-        }
+      
 #if 1
 	while(fgets(linebuf, sizeof(linebuf), sfp) != NULL){
 			fputs2(linebuf,tfp);
@@ -1014,6 +1011,12 @@ invalid_file:
         /* add a whole file CC(#endif) */
         /* the first '\n' is for source file which 
            dose not terminated by newline('\n') */
+
+		if (fprintf(tfp, "#warning %s_%d_%d_%d_%s\n", MAGIC, fileno, cc_id[cur_nest],cc_branch[cur_nest],srcfile) < 0) 
+			  {
+				  ERRExit;
+			  }
+
         if (fprintf(tfp, "\n#endif\n") < 0)
             ERRExit;
 
