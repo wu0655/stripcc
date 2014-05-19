@@ -43,7 +43,6 @@
 #include "list.h"
 #include "ringbuf.h"
 
-#define CONF_FILE           "./stripcc.conf"
 #define ERR_FILE            "./stripcc.err"
 #define LINE_MAX            4096
 #define PATH_MAX            4096
@@ -98,6 +97,9 @@ show_ver(void)
            "This program is free software; you may redistribute it under the terms of\n"
            "the GNU General Public License.  This program has absolutely no warranty.\n");
 }
+
+
+char *config_file="./stripcc.conf";
 
 static void 
 item_free(struct list_t *item)
@@ -293,10 +295,10 @@ list_need_strip_files(void)
     struct list_t *exts = NULL, *dirs = NULL, *files = NULL, *exc_dirs = NULL, 
                   *exc_files = NULL;
 
-    fp = fopen(CONF_FILE, "r");
+    fp = fopen(config_file, "r");
     if (fp == NULL) {
         fprintf(stderr, "\033[31m  o \033[0mFailed to open config file(%s), use the default values.\n", 
-                CONF_FILE);
+                config_file);
         return _list_need_strip_files(&exts_h, &dir_cwd, NULL, NULL, NULL);
     }
 
@@ -309,7 +311,7 @@ list_need_strip_files(void)
             && linebuf[sizeof(linebuf) - 2] != '\n') 
         {
             fprintf(stderr, "\033[31m  o \033[0mThe config line(%s: %d) is too long to parse.\n", 
-                    CONF_FILE, lineno);
+                    config_file, lineno);
             exit(1);
         }
         /* empty line? */
@@ -2134,9 +2136,10 @@ main(int argc, char *argv[])
 
     /* parse args */
     while (1) {
-        ret = getopt(argc, argv, "c:m:fnvh");
+        ret = getopt(argc, argv, "c:m:f:nvh");
         if (ret == -1) {
             if (argv[optind] != NULL) {
+				printf("+++++++++optind=%d+++++++++.\n",optind);
                 show_help();
                 exit(1);
             }
@@ -2149,14 +2152,10 @@ main(int argc, char *argv[])
         case 'm':      /* make dir ... */
             comp_dir = optarg;
             break;
-        case 'n':      /* dont verify ... */
-            do_verify = 0;
-            break;
-#if 0			
+		
         case 'f':      /* fast mode ... */
-            fast_mode = 1;
+            config_file = optarg;
             break;
-#endif			
         case 'v':      /* show stripcc version */
             show_ver();
             return 0;
@@ -2164,12 +2163,13 @@ main(int argc, char *argv[])
             show_help();
             return 0;
         default:
+			printf("+++++++++input cmd is invalid +++++++++.\n");
             show_help();
             exit(1);
         }
     }
 
-    printf("\033[32mo \033[0mGetting a list of files which will be stripped...\n");
+    printf("\033[32mo \033[0mstart stripcc config_file=%s...\n",config_file);
     file_list = list_need_strip_files();
     if (file_list == NULL) {
         printf("\033[31m  o \033[0mCouldn't get any file.\n");
