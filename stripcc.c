@@ -56,6 +56,9 @@
 #define MAKE_LEAVE_DIR_LEN  19
 #define MAIN_FUNC           "int main(int argc, char *argv[]) {return 0;}"
 
+//save filelist
+#define DO_SAVE_EXCLUE_FILE_LIST 1
+
 #define ERRExit \
     do { \
         fprintf(stderr, "\033[31m  o \033[0mUnexpected error(%s: %d), errno = %d\n", \
@@ -200,6 +203,11 @@ _list_need_strip_files(struct list_t *exts, struct list_t *dirs, struct list_t *
         dirs = dirs->next;
     }
 
+
+#if DO_SAVE_EXCLUE_FILE_LIST
+	FILE *fp_tmp = fopen("exclue_file_list.txt","w");
+#endif
+
     /* remove exc_dirs */
     while (exc_dirs != NULL) {
         len = strlen((char *)exc_dirs->data);
@@ -214,12 +222,18 @@ _list_need_strip_files(struct list_t *exts, struct list_t *dirs, struct list_t *
                 /* remove */
                 if (prev == NULL) {
                     rets = item->next;
+#if DO_SAVE_EXCLUE_FILE_LIST
+					fprintf(fp_tmp,"%s\n",item->data);
+#endif
                     item_free(item);
                     /* next */
                     item = rets;
                     continue;
                 } else {
                     prev->next = item->next;
+#if DO_SAVE_EXCLUE_FILE_LIST
+					fprintf(fp_tmp,"%s\n",item->data);
+#endif					
                     item_free(item);
                     /* next */
                     item = prev->next;
@@ -239,6 +253,9 @@ _list_need_strip_files(struct list_t *exts, struct list_t *dirs, struct list_t *
         exc_dirs = exc_dirs->next;
     }
 
+#if DO_SAVE_EXCLUE_FILE_LIST
+fclose(fp_tmp);
+#endif
     /* add files */
     while (files != NULL) {
         /* new item */
@@ -2192,7 +2209,7 @@ main(int argc, char *argv[])
 //add_warning_cc:
     printf("\033[32mo \033[0mAdding \"#warning\"...\n");
     ncc = add_warning_cc_to_files(file_list, fast_mode, &invalid_file_list, &main_list);
-
+#if 0
 {
 	FILE *fp_tmp = fopen("file_list.txt","w");
     struct list_t *tmp;
@@ -2207,6 +2224,8 @@ main(int argc, char *argv[])
 
 	fclose(fp_tmp);
 }
+#endif
+
 	printf("add warning finished. no more, just exit...\n");
 	return 0;
 #if 0
