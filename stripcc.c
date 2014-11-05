@@ -85,7 +85,7 @@ show_help(void)
            " The options are:\n"
            "  -c <str> Commands for build target program, \"make\" is default\n"
            "  -m <str> Directory to run build commands, current directory is default\n"
-           "  -f       Working in fast mode (Experimental, NOT RECOMMENDED!)\n"
+           "  -f       Config file\n"
            "  -n       Don't verify after strip\n"
            "  -v       Display this program's version number\n"
            "  -h       Display this output\n");
