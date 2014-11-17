@@ -1,3 +1,9 @@
+./arch/arm64/boot/dts/apm-mustang.dts
+./arch/arm64/boot/dts/apm-storm.dtsi
+./arch/arm64/boot/dts/foundation-v8.dts
+./arch/arm64/boot/dts/rtsm_ve-aemv8a.dts
+./arch/arm64/boot/dts/rtsm_ve-motherboard.dtsi
+./arch/arm64/boot/dts/skeleton.dtsi
 ./arch/arm64/crypto/aes-ce-ccm-core.S
 ./arch/arm64/crypto/aes-ce-ccm-glue.c
 ./arch/arm64/crypto/aes-ce-cipher.c
